@@ -1,0 +1,11 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "sa.ansvar/saudi-sama-cybersecurity-mcp",
+  "description": "Query Saudi Arabian Monetary Authority (SAMA) cybersecurity frameworks, controls, circulars, and financial sector regulations",
+  "repository": { "url": "https://github.com/Ansvar-Systems/saudi-sama-cybersecurity-mcp", "source": "github" },
+  "homepage": "https://ansvar.eu",
+  "version": "0.1.0",
+  "license": "BSL-1.1",
+  "keywords": ["sama", "cybersecurity", "saudi-arabia", "financial-regulation", "compliance", "mcp", "ansvar"],
+  "packages": [{ "registryType": "npm", "identifier": "@ansvar/saudi-sama-cybersecurity-mcp", "version": "0.1.0", "transport": { "type": "stdio" } }]
+}

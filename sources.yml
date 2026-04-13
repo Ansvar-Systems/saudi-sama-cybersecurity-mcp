@@ -1,0 +1,23 @@
+schema_version: "1.0"
+mcp_name: "Saudi SAMA Cybersecurity MCP"
+category: "regulation"
+
+sources:
+  - name: "SAMA Rules & Instructions"
+    authority: "Saudi Arabian Monetary Authority (SAMA)"
+    official_portal: "https://www.sama.gov.sa/en-US/RulesInstructions/Pages/default.aspx"
+    retrieval_method: "HTML_SCRAPE"
+    format: "PDF"
+    authentication: "none"
+    update_frequency: "quarterly"
+    license:
+      type: "government_terms"
+      url: "https://www.sama.gov.sa/en-US/Pages/TermsConditions.aspx"
+      summary: "Public government publications, available for reference"
+    coverage:
+      scope: "SAMA cybersecurity frameworks, BCM frameworks, IT governance circulars, insurance regulations"
+      version: "Cybersecurity Framework rev. 2022"
+      item_count: "~40 frameworks and circulars"
+    languages:
+      - "en"
+      - "ar"
