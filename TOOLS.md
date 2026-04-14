@@ -266,7 +266,7 @@ None.
 
 ## sa_sama_list_sources
 
-Return data provenance information: which SAMA sources are indexed, retrieval method, update frequency, and licensing terms.
+Return data provenance information: which SAMA sources are indexed, retrieval method (SSH SOCKS5 tunnel via Ansvar dev server), update frequency, and licensing terms.
 
 ### Parameters
 
@@ -288,9 +288,66 @@ None.
   "sources_yml": "schema_version: \"1.0\"\nmcp_name: \"Saudi SAMA Cybersecurity MCP\"\n...",
   "note": "Data is sourced from official SAMA public publications. See sources.yml for full provenance.",
   "_meta": {
-    "disclaimer": "This data is provided for informational reference only...",
-    "data_age": "See coverage.json; refresh frequency: quarterly",
+    "disclaimer": "Reference tool only. Not professional advice. ...",
+    "data_age": "2026-04-14",
     "source_url": "https://www.sama.gov.sa/en-US/RulesInstructions/Pages/default.aspx"
   }
 }
 ```
+
+---
+
+## sa_sama_check_data_freshness
+
+Report per-source data age. Reads `data/coverage.json` at runtime (no hardcoded dates) and compares each source's `last_fetched` against its expected refresh frequency. Returns `Current`, `Due`, or `OVERDUE` per source.
+
+### Parameters
+
+None.
+
+### Example Call
+
+```json
+{
+  "name": "sa_sama_check_data_freshness",
+  "arguments": {}
+}
+```
+
+### Example Response
+
+```json
+{
+  "generated_at": "2026-04-14T11:11:20.562Z",
+  "sources": [
+    {
+      "source": "SAMA Rules & Instructions",
+      "url": "https://www.sama.gov.sa/en-US/RulesInstructions/Pages/default.aspx",
+      "last_fetched": "2026-04-14",
+      "update_frequency": "quarterly",
+      "age_days": 0,
+      "max_age_days": 92,
+      "status": "Current"
+    }
+  ],
+  "totals": { "frameworks": 14, "controls": 308, "circulars": 13 },
+  "update_instructions": "gh workflow run ingest.yml --repo Ansvar-Systems/saudi-sama-cybersecurity-mcp -f force=true",
+  "_meta": { "disclaimer": "...", "data_age": "2026-04-14", "source_url": "..." }
+}
+```
+
+## Error Responses
+
+All error responses carry `isError: true`, a typed `_error_type` field, and a `_meta` block:
+
+```json
+{
+  "content": [{ "type": "text", "text": "No control or circular found..." }],
+  "isError": true,
+  "_error_type": "NO_MATCH",
+  "_meta": { "disclaimer": "...", "data_age": "...", "source_url": "..." }
+}
+```
+
+- `NO_MATCH` — valid input, nothing found (e.g. unknown reference)
+- `INVALID_INPUT` — malformed arguments or unknown tool name

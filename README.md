@@ -4,12 +4,35 @@ MCP server for querying Saudi Arabian Monetary Authority (SAMA) cybersecurity fr
 
 ## What's Included
 
-- **SAMA Cybersecurity Framework (CSF)** — ~120 controls covering cyber risk governance, operations, technology, third-party security, and resilience for Saudi financial institutions (rev. 2022)
-- **Business Continuity Management (BCM) Framework** — ~40 controls for operational resilience and business continuity planning (2020)
-- **Third-Party Risk Management (TPRM) Framework** — ~30 controls for vendor and outsourcing risk management (2021)
-- **SAMA Circulars** — ~20 IT/cybersecurity circulars issued to regulated financial institutions (2016-2024)
+335 indexed rows ingested from the SAMA SharePoint rules portal:
 
-For full coverage details, see [COVERAGE.md](COVERAGE.md). For tool specifications, see [TOOLS.md](TOOLS.md).
+| Framework / Source | Indexed |
+|--------------------|---------|
+| SAMA Cyber Security Framework (2017, rev. 2022) | 39 controls |
+| IT Governance Framework (2021) | 38 controls |
+| Ethical Red Teaming Framework (2021) | 37 controls |
+| Counter-Fraud Framework (2022) | 15 controls |
+| Operational Risk Insurance Schemes (2009) | 23 controls |
+| Manual of Combating Embezzlement (2008) | 9 controls |
+| AML/CTF Guidance (FATF-aligned, 2017) | 143 controls |
+| Business Continuity Management Framework (2017) | 3 controls |
+| Shariah Governance Framework | 1 control |
+| Cyber Threat Intelligence Principles (2022) | framework only |
+| Other frameworks (Digital Banks, Compliance Principles, Corporate Governance, Key Governance Principles) | index only |
+| SAMA Circulars (IT / Cyber / Outsourcing / Fraud / AML, 2015-2024) | 13 circulars |
+
+**Totals:** 14 frameworks, 308 controls, 13 circulars (335 rows).
+
+For full coverage details and gaps, see [COVERAGE.md](COVERAGE.md). For
+tool specifications, see [TOOLS.md](TOOLS.md).
+
+## Access Constraint
+
+SAMA geo-blocks EU datacentre egress IPs; NordVPN has no Saudi exit
+nodes. Ingestion runs through an SSH SOCKS5 tunnel via the Ansvar dev
+server (egress `135.181.100.113`). See
+`data/coverage.json.sources[0].access_method` and `sources.yml` for the
+reproducible route.
 
 ## Installation
 
@@ -23,7 +46,7 @@ npm install @ansvar/saudi-sama-cybersecurity-mcp
 
 ```bash
 docker pull ghcr.io/ansvar-systems/saudi-sama-cybersecurity-mcp:latest
-docker run -p 9060:9060 ghcr.io/ansvar-systems/saudi-sama-cybersecurity-mcp:latest
+docker run -p 9197:9197 ghcr.io/ansvar-systems/saudi-sama-cybersecurity-mcp:latest
 ```
 
 ## Usage
@@ -46,8 +69,8 @@ Add to your MCP client configuration:
 ### HTTP (Streamable HTTP)
 
 ```bash
-docker run -p 9060:9060 ghcr.io/ansvar-systems/saudi-sama-cybersecurity-mcp:latest
-# Server available at http://localhost:9060/mcp
+docker run -p 9197:9197 ghcr.io/ansvar-systems/saudi-sama-cybersecurity-mcp:latest
+# Server available at http://localhost:9197/mcp
 ```
 
 ## Tools
@@ -58,8 +81,9 @@ docker run -p 9060:9060 ghcr.io/ansvar-systems/saudi-sama-cybersecurity-mcp:late
 | `sa_sama_get_regulation` | Get a specific control or circular by reference ID |
 | `sa_sama_search_controls` | Search framework controls with optional framework/domain filters |
 | `sa_sama_list_frameworks` | List all SAMA frameworks with version and control counts |
-| `sa_sama_about` | Server metadata, version, and coverage summary |
-| `sa_sama_list_sources` | Data provenance: sources, retrieval method, licensing |
+| `sa_sama_about` | Server metadata, version, coverage summary, `db_metadata` |
+| `sa_sama_list_sources` | Data provenance: sources, retrieval method (SOCKS tunnel), licensing |
+| `sa_sama_check_data_freshness` | Per-source staleness report read from `data/coverage.json` at runtime |
 
 See [TOOLS.md](TOOLS.md) for parameters, return formats, and examples.
 
