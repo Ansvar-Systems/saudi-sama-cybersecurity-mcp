@@ -107,6 +107,11 @@ CREATE TRIGGER IF NOT EXISTS circulars_au AFTER UPDATE ON circulars BEGIN
   INSERT INTO circulars_fts(rowid, reference, title, category, summary, full_text)
   VALUES (new.id, new.reference, new.title, COALESCE(new.category, ''), COALESCE(new.summary, ''), new.full_text);
 END;
+
+CREATE TABLE IF NOT EXISTS db_metadata (
+  key   TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
 `;
 
 // --- Interfaces ---------------------------------------------------------------
@@ -159,11 +164,29 @@ export function getDb(): Database.Database {
   }
 
   _db = new Database(DB_PATH);
-  _db.pragma("journal_mode = WAL");
+  // Use DELETE journal mode so the shipped, read-only DB doesn't try to
+  // create a -wal sidecar at runtime (container filesystems may be read-only).
+  _db.pragma("journal_mode = DELETE");
   _db.pragma("foreign_keys = ON");
   _db.exec(SCHEMA_SQL);
 
   return _db;
+}
+
+// --- Metadata queries ---------------------------------------------------------
+
+export function getDbMetadata(): Record<string, string> {
+  const db = getDb();
+  try {
+    const rows = db
+      .prepare("SELECT key, value FROM db_metadata")
+      .all() as { key: string; value: string }[];
+    const out: Record<string, string> = {};
+    for (const r of rows) out[r.key] = r.value;
+    return out;
+  } catch {
+    return {};
+  }
 }
 
 // --- Framework queries --------------------------------------------------------

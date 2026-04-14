@@ -27,15 +27,35 @@ import {
   getCircular,
   listFrameworks,
   getStats,
+  getDbMetadata,
 } from "./db.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Walk up from __dirname looking for package.json. Handles both
+// `tsx src/...` (run at repo root) and `node dist/src/...` (compiled).
+function findRepoRoot(): string {
+  let dir = __dirname;
+  for (let i = 0; i < 5; i++) {
+    try {
+      readFileSync(join(dir, "package.json"), "utf8");
+      return dir;
+    } catch {
+      const parent = dirname(dir);
+      if (parent === dir) break;
+      dir = parent;
+    }
+  }
+  return __dirname;
+}
+
+const REPO_ROOT = findRepoRoot();
+
 let pkgVersion = "0.1.0";
 try {
   const pkg = JSON.parse(
-    readFileSync(join(__dirname, "..", "package.json"), "utf8"),
+    readFileSync(join(REPO_ROOT, "package.json"), "utf8"),
   ) as { version: string };
   pkgVersion = pkg.version;
 } catch {
@@ -44,16 +64,60 @@ try {
 
 let sourcesYml = "";
 try {
-  sourcesYml = readFileSync(join(__dirname, "..", "sources.yml"), "utf8");
+  sourcesYml = readFileSync(join(REPO_ROOT, "sources.yml"), "utf8");
 } catch {
   // fallback
+}
+
+interface CoverageSource {
+  name: string;
+  url: string;
+  last_fetched: string | null;
+  update_frequency: string;
+  item_count: number;
+  status: string;
+  expected_items?: number;
+  measurement_unit?: string;
+  verification_method?: string;
+  last_verified?: string;
+}
+
+interface CoverageFile {
+  generatedAt: string;
+  mcp: string;
+  version?: string;
+  sources: CoverageSource[];
+  totals: { frameworks: number; controls: number; circulars: number };
+  summary?: { total_items: number; total_sources: number };
+}
+
+function loadCoverage(): CoverageFile | null {
+  const candidates = [
+    join(REPO_ROOT, "data", "coverage.json"),
+    join(process.cwd(), "data", "coverage.json"),
+  ];
+  for (const p of candidates) {
+    try {
+      return JSON.parse(readFileSync(p, "utf8")) as CoverageFile;
+    } catch {
+      continue;
+    }
+  }
+  return null;
+}
+
+function dataAge(): string {
+  const cov = loadCoverage();
+  if (!cov) return "unknown";
+  const src = cov.sources[0];
+  return src?.last_fetched ?? cov.generatedAt?.slice(0, 10) ?? "unknown";
 }
 
 const SERVER_NAME = "saudi-sama-cybersecurity-mcp";
 
 const DISCLAIMER =
-  "This data is provided for informational reference only. It does not constitute legal or professional advice. " +
-  "Always verify against official SAMA publications at https://www.sama.gov.sa/. " +
+  "Reference tool only. Not professional advice. " +
+  "Verify against the authoritative source at https://www.sama.gov.sa/. " +
   "SAMA regulations are subject to change; confirm currency before reliance.";
 
 const SOURCE_URL = "https://www.sama.gov.sa/en-US/RulesInstructions/Pages/default.aspx";
@@ -179,6 +243,18 @@ const TOOLS = [
       required: [],
     },
   },
+  {
+    name: "sa_sama_check_data_freshness",
+    description:
+      "Report per-source data age for SAMA indexed content. Reads data/coverage.json " +
+      "at runtime (no hardcoded dates) and compares each source's last_fetched against " +
+      "its expected refresh frequency. Returns Current, Due, or OVERDUE status per source.",
+    inputSchema: {
+      type: "object" as const,
+      properties: {},
+      required: [],
+    },
+  },
 ];
 
 // --- Zod schemas --------------------------------------------------------------
@@ -208,17 +284,22 @@ function textContent(data: unknown) {
   };
 }
 
-function errorContent(message: string) {
+function errorContent(
+  message: string,
+  errorType: "NO_MATCH" | "INVALID_INPUT" = "NO_MATCH",
+) {
   return {
     content: [{ type: "text" as const, text: message }],
     isError: true as const,
+    _error_type: errorType,
+    _meta: buildMeta(),
   };
 }
 
 function buildMeta(sourceUrl?: string): Record<string, unknown> {
   return {
     disclaimer: DISCLAIMER,
-    data_age: "See coverage.json; refresh frequency: quarterly",
+    data_age: dataAge(),
     source_url: sourceUrl ?? SOURCE_URL,
   };
 }
@@ -284,6 +365,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return errorContent(
           `No control or circular found with reference: ${docId}. ` +
             "Use sa_sama_search_regulations to find available references.",
+          "NO_MATCH",
         );
       }
 
@@ -313,6 +395,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
       case "sa_sama_about": {
         const stats = getStats();
+        const meta = getDbMetadata();
         return textContent({
           name: SERVER_NAME,
           version: pkgVersion,
@@ -329,6 +412,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             jurisdictions: ["Saudi Arabia"],
             sectors: ["Banking", "Insurance", "Finance", "Payment Services"],
           },
+          db_metadata: meta,
           tools: TOOLS.map((t) => ({ name: t.name, description: t.description })),
           _meta: buildMeta(),
         });
@@ -342,12 +426,63 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         });
       }
 
+      case "sa_sama_check_data_freshness": {
+        const cov = loadCoverage();
+        if (!cov) {
+          return errorContent(
+            "coverage.json not found. Run: npm run coverage:update",
+            "NO_MATCH",
+          );
+        }
+        const FREQ_DAYS: Record<string, number> = {
+          daily: 1,
+          weekly: 7,
+          monthly: 31,
+          quarterly: 92,
+          annually: 365,
+        };
+        const now = Date.now();
+        const report = cov.sources.map((s) => {
+          const maxAgeDays = FREQ_DAYS[s.update_frequency.toLowerCase()] ?? 92;
+          let ageDays: number | null = null;
+          let status: "Current" | "Due" | "OVERDUE" = "Current";
+          if (!s.last_fetched) {
+            status = "OVERDUE";
+          } else {
+            const ms = new Date(s.last_fetched).getTime();
+            if (!Number.isNaN(ms)) {
+              ageDays = Math.floor((now - ms) / (24 * 60 * 60 * 1000));
+              if (ageDays > maxAgeDays) status = "OVERDUE";
+              else if (ageDays > maxAgeDays * 0.8) status = "Due";
+            }
+          }
+          return {
+            source: s.name,
+            url: s.url,
+            last_fetched: s.last_fetched,
+            update_frequency: s.update_frequency,
+            age_days: ageDays,
+            max_age_days: maxAgeDays,
+            status,
+          };
+        });
+        return textContent({
+          generated_at: cov.generatedAt,
+          sources: report,
+          totals: cov.totals,
+          update_instructions:
+            "gh workflow run ingest.yml --repo Ansvar-Systems/saudi-sama-cybersecurity-mcp -f force=true",
+          _meta: buildMeta(),
+        });
+      }
+
       default:
-        return errorContent(`Unknown tool: ${name}`);
+        return errorContent(`Unknown tool: ${name}`, "INVALID_INPUT");
     }
   } catch (err) {
     return errorContent(
       `Error executing ${name}: ${err instanceof Error ? err.message : String(err)}`,
+      "INVALID_INPUT",
     );
   }
 });
