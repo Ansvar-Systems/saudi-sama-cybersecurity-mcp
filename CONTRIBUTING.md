@@ -58,13 +58,16 @@ server code.
 ## Updating Data
 
 **Access constraint:** SAMA geo-blocks EU datacentre egress IPs.
-NordVPN has no Saudi exit nodes. All ingestion runs must go through the
-SSH SOCKS5 tunnel via the Ansvar dev server (egress `135.181.100.113`).
-See `sources.yml` (`access_method`) and `data/coverage.json`
-(`sources[0].access_method`) for full context.
+Commercial consumer VPN providers do not offer Saudi Arabia exit nodes.
+All ingestion runs must go through an SSH SOCKS5 tunnel from an internal
+Ansvar egress host with a Saudi-routable IP. See `sources.yml`
+(`access_method`) and `data/coverage.json` (`sources[0].access_method`)
+for the abstract mechanism; host details are held in Ansvar's internal
+runbook and are not published.
 
 The database is rebuilt automatically on the first day of each quarter by
-`.github/workflows/ingest.yml`. To trigger a manual refresh:
+`.github/workflows/ingest.yml` (operated by Ansvar with the required
+egress host pre-configured). To trigger a manual refresh:
 
 ```bash
 gh workflow run ingest.yml \
@@ -72,13 +75,13 @@ gh workflow run ingest.yml \
   -f force=true
 ```
 
-Local refresh (requires the dev-server tunnel):
+Local refresh (Ansvar operators only — requires access to the internal
+egress host):
 
 ```bash
-# In one terminal: open the SOCKS tunnel
-ssh -D 1080 -N -q deploy@dev.ansvar.eu
-
-# In another terminal: run the ingest with the tunnel
+# 1. Open an SSH SOCKS5 tunnel from your workstation to the egress host
+#    (details in the internal runbook).
+# 2. Run the ingest with the tunnel:
 HTTP_PROXY=socks5://127.0.0.1:1080 \
 HTTPS_PROXY=socks5://127.0.0.1:1080 \
 npm run ingest:full

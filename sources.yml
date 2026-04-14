@@ -13,18 +13,18 @@ sources:
     update_frequency: "quarterly"
     last_verified: "2026-04-14"
     # Access note: the SAMA portal geo-blocks non-Saudi (and most EU datacentre)
-    # egress IPs. All ingestion runs go through an SSH SOCKS5 tunnel via the
-    # Ansvar dev server (egress 135.181.100.113), which is not blocked.
-    # NordVPN has no Saudi Arabia exit nodes; the dev-server IP is the
-    # reproducible route.
+    # egress IPs. Commercial consumer VPNs do not offer Saudi Arabia exit nodes.
+    # All ingestion runs go through an SSH SOCKS5 tunnel from an internal Ansvar
+    # egress host with a Saudi-routable IP. Host details are held in Ansvar's
+    # internal runbook and are not published here.
     access_method:
       mechanism: "ssh_socks5_tunnel"
-      tunnel_host: "dev.ansvar.eu"
       tunnel_local_port: 1080
       geo_block: true
       notes: >-
-        Local Hetzner egress returns SAMA WAF 403. Direct residential egress in
-        Europe is also blocked. Future refreshes must use the dev-server tunnel.
+        Standard EU datacentre egress returns SAMA WAF 403. Refreshes are
+        operated by Ansvar through an internal Saudi-routable egress host;
+        see the internal runbook for configuration.
     license:
       type: "government_terms"
       url: "https://www.sama.gov.sa/en-US/Pages/TermsConditions.aspx"

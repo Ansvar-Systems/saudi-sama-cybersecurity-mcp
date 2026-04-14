@@ -31,9 +31,8 @@
       "status": "current",
       "access_method": {
         "mechanism": "ssh_socks5_tunnel",
-        "tunnel_host": "dev.ansvar.eu",
         "geo_block": true,
-        "notes": "SAMA geo-blocks EU datacentre egress IPs; ingestion runs through an SSH SOCKS5 tunnel via the Ansvar dev server (135.181.100.113). NordVPN has no Saudi exit nodes. All future refreshes must use this tunnel."
+        "notes": "SAMA geo-blocks EU datacentre egress IPs; commercial consumer VPNs do not offer Saudi Arabia exit nodes. Ingestion runs through an SSH SOCKS5 tunnel from an internal Ansvar egress host with a Saudi-routable IP. Host-specific configuration is held in Ansvar's internal runbook and not published."
       }
     }
   ],

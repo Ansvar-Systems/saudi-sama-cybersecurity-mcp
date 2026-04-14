@@ -28,11 +28,12 @@ tool specifications, see [TOOLS.md](TOOLS.md).
 
 ## Access Constraint
 
-SAMA geo-blocks EU datacentre egress IPs; NordVPN has no Saudi exit
-nodes. Ingestion runs through an SSH SOCKS5 tunnel via the Ansvar dev
-server (egress `135.181.100.113`). See
-`data/coverage.json.sources[0].access_method` and `sources.yml` for the
-reproducible route.
+SAMA geo-blocks EU datacentre egress IPs; commercial consumer VPNs do
+not offer Saudi Arabia exit nodes. Ingestion runs through an SSH SOCKS5
+tunnel from an internal Ansvar egress host with a Saudi-routable IP.
+See `data/coverage.json.sources[0].access_method` and `sources.yml` for
+the abstract mechanism. Host-specific details are held in Ansvar's
+internal runbook and are not published.
 
 ## Installation
 

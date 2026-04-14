@@ -26,7 +26,7 @@
 - Scraper: `scripts/ingest-fetch.ts` walks the SAMA SharePoint portal (`https://www.sama.gov.sa/en-US/RulesInstructions/`) across 7 category pages (Cybersecurity, Banking, Finance, Insurance, AML, Money Exchange, Credit Information) following inline `onetidDoclibViewTbl` tables and forward pagination (`?Paged=TRUE&PageFirstRow=N`). Keyword filter matches cyber / IT / governance / fraud / AML / outsourcing / compliance / electronic / digital terms.
 - PDF text extraction: `pdf-parse` native Node parser.
 - Control extraction: `scripts/build-db.ts` parses hierarchical SAMA numbering (L1 `3`, L2 `3.1`, L3+ `3.1.1`) from PDF text; falls back to L2 when a framework has no L3 refs (Red Teaming).
-- Ingested **2026-04-14** via SSH SOCKS5 tunnel through the Ansvar dev server (egress `135.181.100.113`). The local Hetzner egress was geo-blocked by SAMA; NordVPN has no Saudi Arabia exit nodes; the dev-server IP reaches SAMA directly.
+- Ingested **2026-04-14** via an SSH SOCKS5 tunnel from an internal Ansvar egress host with a Saudi-routable IP. Standard EU datacentre egress is geo-blocked by SAMA, and consumer VPN providers do not offer Saudi exit nodes. The egress host details are held in Ansvar's internal runbook and not published.
 
 ## What's NOT Included
 
