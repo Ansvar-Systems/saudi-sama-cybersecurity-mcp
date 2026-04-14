@@ -1,0 +1,20 @@
+{
+  "generatedAt": "2026-04-14T10:59:39.737Z",
+  "mcp": "saudi-sama-cybersecurity-mcp",
+  "version": "0.1.0",
+  "sources": [
+    {
+      "name": "SAMA Rules & Instructions",
+      "url": "https://www.sama.gov.sa/en-US/RulesInstructions/Pages/default.aspx",
+      "last_fetched": "2024-11-17",
+      "update_frequency": "quarterly",
+      "item_count": 335,
+      "status": "current"
+    }
+  ],
+  "totals": {
+    "frameworks": 14,
+    "controls": 308,
+    "circulars": 13
+  }
+}

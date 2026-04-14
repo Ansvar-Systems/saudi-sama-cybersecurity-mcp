@@ -18,6 +18,7 @@ COPY package.json ./
 RUN npm install --include=dev
 
 COPY tsconfig.json ./
+COPY server.json ./
 COPY src/ ./src/
 COPY scripts/ ./scripts/
 COPY sources.yml ./
@@ -25,8 +26,15 @@ COPY sources.yml ./
 # Build TypeScript
 RUN npm run build
 
-# Seed the sample database so the container works out-of-the-box
-RUN mkdir -p data && node dist/scripts/seed-sample.js
+# Copy pre-built SAMA SQLite DB (the real ingested dataset).
+# If it is not present (e.g. clean checkout), fall back to seeding a sample DB.
+COPY data/ ./data/
+RUN if [ ! -s data/sama.db ]; then \
+      echo "No data/sama.db found, seeding sample"; \
+      mkdir -p data && node dist/scripts/seed-sample.js; \
+    else \
+      echo "Using committed data/sama.db ($(du -h data/sama.db | cut -f1))"; \
+    fi
 
 # Remove dev dependencies
 RUN npm prune --omit=dev

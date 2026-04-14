@@ -1,0 +1,25 @@
+# Build / dev artifacts
+node_modules/
+dist/
+
+# Large ingestion intermediates — only the built SQLite DB + coverage.json ship
+data/raw/
+data/*.db-shm
+data/*.db-wal
+
+# Git / CI / IDE
+.git/
+.github/
+.vscode/
+.idea/
+*.log
+.DS_Store
+
+# Docs that don't belong in the runtime image
+*.md
+!README.md
+
+# Tests / local runs
+tests/
+coverage/
+tmp/
