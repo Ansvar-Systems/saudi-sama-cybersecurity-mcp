@@ -23,3 +23,5 @@ data/*.db-wal
 tests/
 coverage/
 tmp/
+.env
+.env.*
