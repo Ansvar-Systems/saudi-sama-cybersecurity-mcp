@@ -13,15 +13,28 @@ jobs:
       - run: npm ci
       - name: Check freshness
         id: freshness
+        # The script exits 2 when any source is stale; don't fail the whole
+        # job — we still want to file the issue. Use "|| true" + read the
+        # stale marker file.
         run: |
-          npm run freshness:check
-          echo "stale=$(cat .freshness-stale)" >> $GITHUB_OUTPUT
+          npm run freshness:check || true
+          if [ -f data/.freshness-stale ]; then
+            echo "stale=$(cat data/.freshness-stale)" >> $GITHUB_OUTPUT
+          else
+            echo "stale=true" >> $GITHUB_OUTPUT
+          fi
       - name: Create issue if stale
         if: steps.freshness.outputs.stale == 'true'
         uses: actions/github-script@v7
         with:
           script: |
-            const summary = require('fs').readFileSync('.freshness-report', 'utf8');
+            const fs = require('fs');
+            const reportPath = fs.existsSync('data/.freshness-report')
+              ? 'data/.freshness-report'
+              : null;
+            const summary = reportPath
+              ? fs.readFileSync(reportPath, 'utf8')
+              : 'Freshness report file missing. Check workflow logs.';
             await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,

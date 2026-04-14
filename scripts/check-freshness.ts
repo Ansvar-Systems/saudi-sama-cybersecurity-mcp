@@ -15,11 +15,19 @@
  *   npx tsx scripts/check-freshness.ts
  */
 
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
 
 const COVERAGE_FILE = "data/coverage.json";
 const REPORT_FILE = "data/.freshness-report";
 const STALE_FILE = "data/.freshness-stale";
+
+function ensureParentDir(path: string): void {
+  const dir = dirname(path);
+  if (dir && !existsSync(dir)) {
+    mkdirSync(dir, { recursive: true });
+  }
+}
 
 interface CoverageSource {
   name: string;
@@ -70,6 +78,7 @@ async function main(): Promise<void> {
       reason: "coverage.json not found",
       sources: [],
     };
+    ensureParentDir(REPORT_FILE);
     writeFileSync(REPORT_FILE, JSON.stringify(report, null, 2), "utf8");
     writeFileSync(STALE_FILE, "true", "utf8");
     console.error("coverage.json not found. Run: npm run coverage:update");
@@ -133,6 +142,7 @@ async function main(): Promise<void> {
     sources: sourceReports,
   };
 
+  ensureParentDir(REPORT_FILE);
   writeFileSync(REPORT_FILE, JSON.stringify(report, null, 2), "utf8");
   writeFileSync(STALE_FILE, anyStale ? "true" : "false", "utf8");
 
