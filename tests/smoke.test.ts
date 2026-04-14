@@ -33,7 +33,8 @@ describe("SAMA database smoke", () => {
     const csf = db
       .prepare("SELECT name FROM frameworks WHERE id = 'sama-csf'")
       .get() as { name: string } | undefined;
-    expect(csf?.name).toMatch(/Cyber Security Framework/i);
+    // Real ingestion: "Cyber Security Framework"; seed-sample: "SAMA Cybersecurity Framework".
+    expect(csf?.name).toMatch(/Cyber ?[Ss]ecurity Framework/);
     db.close();
   });
 
