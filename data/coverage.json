@@ -1,20 +1,101 @@
 {
-  "generatedAt": "2026-04-14T10:59:39.737Z",
+  "schema_version": "1.0",
+  "generatedAt": "2026-04-14T11:11:20.562Z",
   "mcp": "saudi-sama-cybersecurity-mcp",
+  "mcp_type": "regulatory_publications",
   "version": "0.1.0",
+  "scope_statement": "SAMA cybersecurity and IT governance frameworks (CSF, CTI, Red Teaming, Counter-Fraud, IT Governance, BCM, AML/CTF, Operational Risk Insurance) plus IT/cyber/outsourcing/fraud/AML circulars published on the SAMA SharePoint rules portal at https://www.sama.gov.sa/en-US/RulesInstructions/.",
+  "scope_exclusions": [
+    "Arabic-only SAMA publications (English focus for v1)",
+    "Confidential SAMA supervisory letters and examination findings",
+    "SAMA enforcement actions, penalty decisions, settlement agreements",
+    "Draft regulations and consultation papers",
+    "Non-cybersecurity SAMA regulations (Basel III, IFRS 9, consumer protection)",
+    "Guidance from other Saudi regulators (CMA, CST, Zakat/Tax/Customs Authority)",
+    "Institution-specific licensing or authorisation conditions"
+  ],
   "sources": [
     {
+      "id": "sama-rules-instructions",
       "name": "SAMA Rules & Instructions",
+      "authority": "Saudi Arabian Monetary Authority (SAMA)",
       "url": "https://www.sama.gov.sa/en-US/RulesInstructions/Pages/default.aspx",
-      "last_fetched": "2024-11-17",
+      "last_fetched": "2026-04-14",
+      "last_verified": "2026-04-14",
       "update_frequency": "quarterly",
       "item_count": 335,
-      "status": "current"
+      "expected_items": 335,
+      "measurement_unit": "rows (frameworks + parsed controls + circulars) ingested from SAMA SharePoint portal",
+      "verification_method": "page_scraped_pdf_parsed",
+      "completeness": "partial",
+      "status": "current",
+      "access_method": {
+        "mechanism": "ssh_socks5_tunnel",
+        "tunnel_host": "dev.ansvar.eu",
+        "geo_block": true,
+        "notes": "SAMA geo-blocks EU datacentre egress IPs; ingestion runs through an SSH SOCKS5 tunnel via the Ansvar dev server (135.181.100.113). NordVPN has no Saudi exit nodes. All future refreshes must use this tunnel."
+      }
     }
   ],
   "totals": {
     "frameworks": 14,
     "controls": 308,
     "circulars": 13
-  }
+  },
+  "summary": {
+    "total_items": 335,
+    "total_sources": 1
+  },
+  "gaps": [
+    {
+      "topic": "Arabic-language framework bodies",
+      "reason": "PDF text extraction yields partial Arabic; the DB only stores English titles. title_ar column is reserved but not populated.",
+      "planned": true
+    },
+    {
+      "topic": "SAMA Cyber Threat Intelligence Principles leaf-level controls",
+      "reason": "Numbering in the PDF does not map to the standard SAMA L1-L2-L3 hierarchy; framework registered, leaf controls not parseable.",
+      "planned": true
+    },
+    {
+      "topic": "Shariah Governance Framework controls",
+      "reason": "Framework indexed; individual controls not yet parsed.",
+      "planned": true
+    },
+    {
+      "topic": "SAMA circulars beyond representative subset",
+      "reason": "13 circulars indexed (IT, cyber, outsourcing, fraud, AML from 2015-2024). Historical backfill and full coverage of banking/insurance circulars deferred.",
+      "planned": false
+    }
+  ],
+  "tools": [
+    {
+      "name": "sa_sama_search_regulations",
+      "description": "Full-text search across SAMA controls and circulars."
+    },
+    {
+      "name": "sa_sama_get_regulation",
+      "description": "Retrieve a specific control or circular by reference."
+    },
+    {
+      "name": "sa_sama_search_controls",
+      "description": "Search framework controls (CSF/BCM/TPRM) with filters."
+    },
+    {
+      "name": "sa_sama_list_frameworks",
+      "description": "Enumerate indexed SAMA frameworks."
+    },
+    {
+      "name": "sa_sama_about",
+      "description": "Server metadata, coverage summary, db_metadata."
+    },
+    {
+      "name": "sa_sama_list_sources",
+      "description": "Data provenance and retrieval method (SOCKS tunnel)."
+    },
+    {
+      "name": "sa_sama_check_data_freshness",
+      "description": "Per-source staleness report read at runtime from coverage.json."
+    }
+  ]
 }

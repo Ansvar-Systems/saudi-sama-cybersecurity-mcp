@@ -6,18 +6,37 @@ sources:
   - name: "SAMA Rules & Instructions"
     authority: "Saudi Arabian Monetary Authority (SAMA)"
     official_portal: "https://www.sama.gov.sa/en-US/RulesInstructions/Pages/default.aspx"
+    api_url: null
     retrieval_method: "HTML_SCRAPE"
     format: "PDF"
     authentication: "none"
     update_frequency: "quarterly"
+    last_verified: "2026-04-14"
+    # Access note: the SAMA portal geo-blocks non-Saudi (and most EU datacentre)
+    # egress IPs. All ingestion runs go through an SSH SOCKS5 tunnel via the
+    # Ansvar dev server (egress 135.181.100.113), which is not blocked.
+    # NordVPN has no Saudi Arabia exit nodes; the dev-server IP is the
+    # reproducible route.
+    access_method:
+      mechanism: "ssh_socks5_tunnel"
+      tunnel_host: "dev.ansvar.eu"
+      tunnel_local_port: 1080
+      geo_block: true
+      notes: >-
+        Local Hetzner egress returns SAMA WAF 403. Direct residential egress in
+        Europe is also blocked. Future refreshes must use the dev-server tunnel.
     license:
       type: "government_terms"
       url: "https://www.sama.gov.sa/en-US/Pages/TermsConditions.aspx"
-      summary: "Public government publications, available for reference"
+      summary: "Public SAMA publications, available for reference"
     coverage:
-      scope: "SAMA cybersecurity frameworks, BCM frameworks, IT governance circulars, insurance regulations"
-      version: "Cybersecurity Framework rev. 2022"
-      item_count: "~40 frameworks and circulars"
+      scope: >-
+        SAMA cybersecurity frameworks (CSF, CTI, Red Teaming, Counter-Fraud,
+        IT Governance, BCM, AML/CTF, Operational Risk Insurance), plus
+        IT / cyber / outsourcing / fraud / AML circulars published on the
+        SAMA SharePoint rules portal.
+      version: "Cyber Security Framework 2017 (rev. 2022); IT Governance 2021; Red Teaming 2021; Counter-Fraud 2022"
+      item_count: "335 indexed rows (14 frameworks, 308 controls, 13 circulars)"
     languages:
       - "en"
       - "ar"
