@@ -14,8 +14,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-COPY package.json ./
-RUN npm install --include=dev
+COPY package.json package-lock.json ./
+RUN npm ci --include=dev
 
 COPY tsconfig.json ./
 COPY server.json ./

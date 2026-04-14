@@ -1,0 +1,37 @@
+name: OpenSSF Scorecard
+
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Weekly Monday 06:00 UTC
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  id-token: write
+
+jobs:
+  analysis:
+    name: Scorecard analysis
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Run analysis
+        uses: ossf/scorecard-action@v2.4.3
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          # Repo is internal; OSSF public scorecard publishing requires a
+          # public repo. Keep results local + uploaded to GitHub Security.
+          publish_results: false
+
+      - name: Upload to code-scanning
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: results.sarif
