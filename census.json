@@ -1,0 +1,191 @@
+{
+  "schema_version": "1.0",
+  "mcp_name": "saudi-sama-cybersecurity-mcp",
+  "mcp_type": "regulatory_publications",
+  "jurisdiction": "SA",
+  "jurisdiction_name": "Saudi Arabia",
+  "authority": "Saudi Arabian Monetary Authority (SAMA)",
+  "portal": "https://www.sama.gov.sa/en-US/RulesInstructions/Pages/default.aspx",
+  "census_date": "2026-04-14",
+  "agent": "claude-opus-4-6",
+  "summary": {
+    "total_rows": 335,
+    "frameworks": 14,
+    "frameworks_with_controls": 9,
+    "frameworks_index_only": 5,
+    "controls": 308,
+    "circulars": 13
+  },
+  "sources": [
+    {
+      "id": "sama-rules-instructions",
+      "name": "SAMA Rules & Instructions",
+      "portal_url": "https://www.sama.gov.sa/en-US/RulesInstructions/Pages/default.aspx",
+      "document_count": 335,
+      "last_scraped": "2026-04-14",
+      "ingested_count": 335,
+      "access_method": "ssh_socks5_tunnel",
+      "access_notes": "SAMA geo-blocks EU datacentre egress IPs; ingestion runs through an SSH SOCKS5 tunnel from an internal Ansvar egress host with a Saudi-routable IP. Runtime consumers do not require a tunnel."
+    }
+  ],
+  "frameworks": [
+    {
+      "id": "sama-csf",
+      "name": "Cyber Security Framework",
+      "version": "1.0",
+      "domain": "Cybersecurity",
+      "effective_date": "2021-06-17",
+      "controls_count": 39,
+      "classification": "ingested",
+      "ingested": true
+    },
+    {
+      "id": "sama-itg",
+      "name": "Information Technology Governance Framework",
+      "version": "1.0",
+      "domain": "Cybersecurity",
+      "effective_date": "2021-12-12",
+      "controls_count": 38,
+      "classification": "ingested",
+      "ingested": true
+    },
+    {
+      "id": "sama-ert",
+      "name": "Financial Entities Ethical Red Teaming Framework",
+      "version": "1.0",
+      "domain": "Cybersecurity",
+      "effective_date": "2021-06-17",
+      "controls_count": 37,
+      "classification": "ingested",
+      "ingested": true
+    },
+    {
+      "id": "sama-cfraud",
+      "name": "Counter-Fraud Framework",
+      "version": "1.0",
+      "domain": "Cybersecurity",
+      "effective_date": "2022-10-12",
+      "controls_count": 15,
+      "classification": "ingested",
+      "ingested": true
+    },
+    {
+      "id": "sama-manageoperationalrisk",
+      "name": "The Management of Operational Risk Through Appropriate Insurance Schemes",
+      "version": "1.0",
+      "domain": "Banking",
+      "effective_date": "2009-04-13",
+      "controls_count": 23,
+      "classification": "ingested",
+      "ingested": true
+    },
+    {
+      "id": "sama-manual-of-combating-embezzlement-and-fin",
+      "name": "Manual of Combating Embezzlement and Financial Fraud and Control Guidelines",
+      "version": "1.0",
+      "domain": "Banking",
+      "effective_date": "2009-04-13",
+      "controls_count": 9,
+      "classification": "ingested",
+      "ingested": true
+    },
+    {
+      "id": "sama-bcm",
+      "name": "Business Continuity Management Framework",
+      "version": "1.0",
+      "domain": "Cybersecurity",
+      "effective_date": "2021-06-17",
+      "controls_count": 3,
+      "classification": "partial",
+      "classification_reason": "Framework ingested; top-level controls extracted but not the full section hierarchy.",
+      "ingested": true
+    },
+    {
+      "id": "sama-money-laundering",
+      "name": "AML-CTF Guidance (FATF-aligned)",
+      "version": "1.0",
+      "domain": "AML",
+      "effective_date": "2021-06-17",
+      "controls_count": 143,
+      "classification": "ingested",
+      "ingested": true
+    },
+    {
+      "id": "sama-shariah-governance-framework-for-local-b",
+      "name": "Shariah Governance Framework for Local Banks Operating in Saudi Arabia",
+      "version": "1.0",
+      "domain": "Banking",
+      "effective_date": "2020-02-13",
+      "controls_count": 1,
+      "classification": "partial",
+      "classification_reason": "Framework registered; individual controls not yet parsed.",
+      "ingested": true
+    },
+    {
+      "id": "sama-cti",
+      "name": "Financial Sector Cyber Threat Intelligence Principles",
+      "version": "1.0",
+      "domain": "Cybersecurity",
+      "effective_date": "2022-03-03",
+      "controls_count": 0,
+      "classification": "index_only",
+      "classification_reason": "Numbering in the PDF does not map to the standard SAMA L1-L2-L3 hierarchy; framework registered, leaf controls not parseable.",
+      "ingested": true
+    },
+    {
+      "id": "sama-additional-licensing-guidelines-and-crit",
+      "name": "Additional Licensing Guidelines and Criteria for Digital-Only Banks in Saudi Arabia",
+      "version": "1.0",
+      "domain": "Banking",
+      "effective_date": "2020-02-24",
+      "controls_count": 0,
+      "classification": "index_only",
+      "classification_reason": "Framework registered as a directive; no discrete controls to parse.",
+      "ingested": true
+    },
+    {
+      "id": "sama-compliance-principles-for-finance-compan",
+      "name": "Compliance Principles for Finance Companies and Real Estate Refinance Companies",
+      "version": "1.0",
+      "domain": "Finance",
+      "effective_date": "2024-10-02",
+      "controls_count": 0,
+      "classification": "index_only",
+      "classification_reason": "Framework registered; principles are narrative and not extracted as discrete controls.",
+      "ingested": true
+    },
+    {
+      "id": "sama-key-principles-of-governance-in-financia",
+      "name": "Key Principles of Governance in Financial Institutions under the Control and Supervision of the Saudi Central Bank",
+      "version": "1.0",
+      "domain": "Banking",
+      "effective_date": "2021-08-17",
+      "controls_count": 0,
+      "classification": "index_only",
+      "classification_reason": "Framework registered; principles are narrative.",
+      "ingested": true
+    },
+    {
+      "id": "sama-corporate-governance-24-2-2014",
+      "name": "Principles of Corporate Governance for Banks Operating in Saudi Arabia (First Update, March 2014)",
+      "version": "2014-03",
+      "domain": "Banking",
+      "effective_date": "2014-03-19",
+      "controls_count": 0,
+      "classification": "index_only",
+      "classification_reason": "Framework registered; principles are narrative.",
+      "ingested": true
+    }
+  ],
+  "circulars_summary": {
+    "total": 13,
+    "by_category": {
+      "Banking": 6,
+      "Finance": 5,
+      "Cybersecurity": 1,
+      "Insurance": 1
+    },
+    "years_covered": "2015-2024",
+    "topics": ["IT", "cyber", "outsourcing", "fraud", "AML"]
+  }
+}
